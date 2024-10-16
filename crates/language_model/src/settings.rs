@@ -16,6 +16,7 @@ use crate::{
         google::GoogleSettings,
         ollama::OllamaSettings,
         open_ai::OpenAiSettings,
+        nvidia::NvidiaSettings,
     },
     LanguageModelCacheConfiguration,
 };
@@ -61,6 +62,7 @@ pub struct AllLanguageModelSettings {
     pub zed_dot_dev: ZedDotDevSettings,
     pub google: GoogleSettings,
     pub copilot_chat: CopilotChatSettings,
+    pub nvidia: NvidiaSettings,
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]

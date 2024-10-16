@@ -406,6 +406,7 @@ dependencies = [
  "markdown",
  "menu",
  "multi_buffer",
+ "nvidia",
  "ollama",
  "open_ai",
  "ordered-float 2.10.1",
@@ -6276,6 +6277,7 @@ dependencies = [
  "language",
  "log",
  "menu",
+ "nvidia",
  "ollama",
  "open_ai",
  "parking_lot",
@@ -7439,6 +7441,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c7398b9c8b70908f6371f47ed36737907c87c52af34c268fed0bf0ceb92ead9"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "nvidia"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "futures 0.3.30",
+ "http_client",
+ "schemars",
+ "serde",
+ "serde_json",
+ "strum 0.25.0",
 ]
 
 [[package]]

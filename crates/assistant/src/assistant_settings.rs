@@ -11,6 +11,7 @@ use language_model::settings::{
     VersionedOpenAiSettingsContent,
 };
 use language_model::{settings::AllLanguageModelSettings, CloudModel, LanguageModel};
+use nvidia::Model as NvidiaModel;
 use ollama::Model as OllamaModel;
 use schemars::{schema::Schema, JsonSchema};
 use serde::{Deserialize, Serialize};
@@ -48,6 +49,13 @@ pub enum AssistantProviderContentV1 {
         default_model: Option<OllamaModel>,
         api_url: Option<String>,
         low_speed_timeout_in_seconds: Option<u64>,
+    },
+    #[serde(rename = "nvidia")]
+    Nvidia {
+        default_model: Option<NvidiaModel>,
+        api_url: Option<String>,
+        low_speed_timeout_in_seconds: Option<u64>,
+        api_key: Option<String>, // Add this field for the API key
     },
 }
 
@@ -224,6 +232,12 @@ impl AssistantSettingsContent {
                                     model: model.id().to_string(),
                                 })
                             }
+                            AssistantProviderContentV1::Nvidia { default_model, .. } => {
+                                default_model.map(|model| LanguageModelSelection {
+                                    provider: "nvidia".to_string(),
+                                    model: model.id().to_string(),
+                                })
+                            }
                             AssistantProviderContentV1::Anthropic { default_model, .. } => {
                                 default_model.map(|model| LanguageModelSelection {
                                     provider: "anthropic".to_string(),
@@ -339,6 +353,28 @@ impl AssistantSettingsContent {
                             available_models,
                         });
                     }
+                    "nvidia" => {
+                        let (api_url, low_speed_timeout_in_seconds, api_key) =
+                            match &settings.provider {
+                                Some(AssistantProviderContentV1::Nvidia {
+                                    api_url,
+                                    low_speed_timeout_in_seconds,
+                                    api_key,
+                                    ..
+                                }) => (
+                                    api_url.clone(),
+                                    *low_speed_timeout_in_seconds,
+                                    api_key.clone(),
+                                ),
+                                _ => (None, None, None),
+                            };
+                        settings.provider = Some(AssistantProviderContentV1::Nvidia {
+                            default_model: NvidiaModel::from_id(&model).ok(),
+                            api_url,
+                            low_speed_timeout_in_seconds,
+                            api_key,
+                        });
+                    }
                     _ => {}
                 },
                 VersionedAssistantSettingsContent::V2(settings) => {
@@ -417,6 +453,7 @@ fn providers_schema(_: &mut schemars::gen::SchemaGenerator) -> schemars::schema:
         enum_values: Some(vec![
             "anthropic".into(),
             "google".into(),
+            "nvidia".into(),
             "ollama".into(),
             "openai".into(),
             "zed.dev".into(),

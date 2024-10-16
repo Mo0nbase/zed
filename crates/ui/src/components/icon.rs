@@ -119,7 +119,7 @@ impl IconSize {
 #[strum(serialize_all = "snake_case")]
 #[path_str(prefix = "icons", suffix = ".svg")]
 pub enum IconName {
-    Ai,
+    AiNvidia,
     AiAnthropic,
     AiAnthropicHosted,
     AiGoogle,

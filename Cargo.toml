@@ -68,6 +68,7 @@ members = [
     "crates/multi_buffer",
     "crates/node_runtime",
     "crates/notifications",
+    "crates/nvidia",
     "crates/ollama",
     "crates/open_ai",
     "crates/outline",
@@ -244,6 +245,7 @@ menu = { path = "crates/menu" }
 multi_buffer = { path = "crates/multi_buffer" }
 node_runtime = { path = "crates/node_runtime" }
 notifications = { path = "crates/notifications" }
+nvidia = { path = "crates/nvidia" }
 ollama = { path = "crates/ollama" }
 open_ai = { path = "crates/open_ai" }
 outline = { path = "crates/outline" }

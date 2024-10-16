@@ -188,6 +188,17 @@ impl From<&str> for MessageContent {
     }
 }
 
+impl std::fmt::Display for MessageContent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MessageContent::Text(text) => write!(f, "{}", text),
+            MessageContent::Image(image) => write!(f, "{}", image.source.to_string()),
+            MessageContent::ToolUse(tool_use) => write!(f, "{}", tool_use.id),
+            MessageContent::ToolResult(tool_result) => write!(f, "{}", tool_result.content),
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Hash)]
 pub struct LanguageModelRequestMessage {
     pub role: Role,
@@ -408,6 +419,24 @@ impl LanguageModelRequest {
             temperature: self.temperature.or(Some(default_temperature)),
             top_k: None,
             top_p: None,
+        }
+    }
+
+    pub fn into_nvidia(self, model_id: String, max_output_tokens: Option<u32>) -> nvidia::Request {
+        nvidia::Request {
+            model: model_id,
+            messages: self.messages.into_iter().map(|m| nvidia::RequestMessage {
+                role: match m.role {
+                    Role::User => nvidia::Role::User,
+                    Role::Assistant => nvidia::Role::Assistant,
+                    Role::System => nvidia::Role::System,
+                },
+                content: m.content.into_iter().map(|c| c.to_string()).collect::<Vec<_>>().join(" "),
+            }).collect(),
+            stream: true,
+            max_tokens: max_output_tokens,
+            temperature: self.temperature.unwrap_or(0.7),
+            top_p: Some(1.0), // Hard-coded value
         }
     }
 }

@@ -4,6 +4,7 @@ use crate::{
         anthropic::AnthropicLanguageModelProvider, cloud::CloudLanguageModelProvider,
         copilot_chat::CopilotChatLanguageModelProvider, google::GoogleLanguageModelProvider,
         ollama::OllamaLanguageModelProvider, open_ai::OpenAiLanguageModelProvider,
+        nvidia::NvidiaLanguageModelProvider,
     },
     LanguageModel, LanguageModelId, LanguageModelProvider, LanguageModelProviderId,
     LanguageModelProviderState,
@@ -50,7 +51,10 @@ fn register_language_model_providers(
         cx,
     );
     registry.register_provider(CopilotChatLanguageModelProvider::new(cx), cx);
-
+    registry.register_provider(
+        NvidiaLanguageModelProvider::new(client.http_client(), cx),
+        cx,
+    );
     cx.observe_flag::<feature_flags::LanguageModels, _>(move |enabled, cx| {
         let user_store = user_store.clone();
         let client = client.clone();
